@@ -1,0 +1,7 @@
+S:\Vbox Share\Software_x_sviluppo_COBOL\Progetti_vari\COBOL-ARDUINO\AcuCBL_to_Arduino\IGP_SimpleSerial\bin\Debug\IGP_SimpleSerial.exe.config
+S:\Vbox Share\Software_x_sviluppo_COBOL\Progetti_vari\COBOL-ARDUINO\AcuCBL_to_Arduino\IGP_SimpleSerial\bin\Debug\IGP_SimpleSerial.exe
+S:\Vbox Share\Software_x_sviluppo_COBOL\Progetti_vari\COBOL-ARDUINO\AcuCBL_to_Arduino\IGP_SimpleSerial\bin\Debug\IGP_SimpleSerial.pdb
+S:\Vbox Share\Software_x_sviluppo_COBOL\Progetti_vari\COBOL-ARDUINO\AcuCBL_to_Arduino\IGP_SimpleSerial\obj\Debug\IGP_SimpleSerial.csproj.AssemblyReference.cache
+S:\Vbox Share\Software_x_sviluppo_COBOL\Progetti_vari\COBOL-ARDUINO\AcuCBL_to_Arduino\IGP_SimpleSerial\obj\Debug\IGP_SimpleSerial.csproj.CoreCompileInputs.cache
+S:\Vbox Share\Software_x_sviluppo_COBOL\Progetti_vari\COBOL-ARDUINO\AcuCBL_to_Arduino\IGP_SimpleSerial\obj\Debug\IGP_SimpleSerial.exe
+S:\Vbox Share\Software_x_sviluppo_COBOL\Progetti_vari\COBOL-ARDUINO\AcuCBL_to_Arduino\IGP_SimpleSerial\obj\Debug\IGP_SimpleSerial.pdb

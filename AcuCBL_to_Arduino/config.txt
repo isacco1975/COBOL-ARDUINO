@@ -1,0 +1,6 @@
+strip_trailing_spaces 1
+CODE_PREFIX   .\OBJ\
+IO_CREATES 1
+TRIM_TRAILING_SPACES 1
+SCROLL 0
+WRAP 0
