@@ -211,11 +211,11 @@
                               4
             MOVE SPACES TO KEY-PRESSED
 
-            CALL 'C$SOCKET'   USING 7
-                              SOCKET-HANDLE
-
       * -> Waiting for the same time to finish
             CALL "C$SLEEP"   USING SETTINGS-NSECS
+
+            CALL 'C$SOCKET'   USING 7
+                              SOCKET-HANDLE
 
       * -> Display reset
             MOVE 9                                   TO W-COLOR
