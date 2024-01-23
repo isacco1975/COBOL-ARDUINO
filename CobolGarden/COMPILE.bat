@@ -1,2 +1,2 @@
-C:\Acucorp\Acucbl700\AcuGT\bin\ccbl32  -Zd -o "S:\Vbox Share\Software_x_sviluppo_COBOL\Progetti_vari\CobolGarden\OBJ\CobolGarden.acu" "S:\Vbox Share\Software_x_sviluppo_COBOL\Progetti_vari\CobolGarden\SRC\CobolGarden.cbl" 
+C:\Acucorp\Acucbl700\AcuGT\bin\ccbl32  -Zd -o ".\OBJ\CobolGarden.acu" ".\SRC\CobolGarden.cbl" 
 pause

@@ -3,7 +3,7 @@
        AUTHOR.        "ISAAC GARCIA PEVERI".
        INSTALLATION.  "ISAAC GARCIA PEVERI".
        DATE-WRITTEN.  24.08.2023.
-       DATE-COMPILED. 24.08.2023.
+       DATE-COMPILED. 01.10.2023.
        REMARKS.       ACUCOBOL-GT DIALECT 7.0.0.
       *
       *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-**
@@ -57,7 +57,7 @@
        77 VIDEO-DATE         PIC  X(10)           VALUE "01/01/1900".
        77 VIDEO-DATE-NEXT    PIC  X(10)           VALUE "31/12/2099".
        77 VIDEO-TIME         PIC  X(8)            VALUE "00:00:00".
-       77 VIDEO-MESSAGE      PIC  X(35)           VALUE SPACES.      
+       77 VIDEO-MESSAGE      PIC  X(35)           VALUE SPACES.
        77 WS-DAYS            PIC  9(14)           VALUE ZERO.
        77 MOD-DAYS           PIC  9(2)            VALUE ZERO.
        77 WS-DATE-NEXT       PIC  9(8)            VALUE 20991231.
@@ -66,28 +66,20 @@
        77 WS-TIME            PIC  9(8)            VALUE ZERO.
        77 WS-CURR-TIMESTAMP  PIC 9(14)            VALUE ZERO.
        77 WS-NEXT-TIMESTAMP  PIC 9(14)            VALUE ZERO.
-	   77 W-COLOR            PIC 9                VALUE 7.
+       77 W-COLOR            PIC 9                VALUE 7.
+       77 SOCKET-HANDLE      USAGE HANDLE.
       *
       *-> change these 2 following variable to your needs
        01 SETTINGS-GROUP.
       *-> This indicates how every days open the pump
-          05 SETTINGS-NDAYS PIC  9(2)             VALUE 01.
+          05 SETTINGS-NDAYS PIC  9(2)   VALUE 01.
       *-> This indicates how many seconds keep it running
-          05 SETTINGS-NSECS PIC  9(2)             VALUE 15.
+          05 SETTINGS-NSECS PIC  9(2)   VALUE 15.
 
       *-> Message to Arduino
-       01 CMD-SEND-MESSAGE.
-      *-> The command to start the Serial driver
-          05 CMD-LINE0   PIC X(06)                VALUE "START ".
-          05 CMD-LINE2   PIC X(21)       VALUE "IGP_SimpleSerial.exe ".
-      *-> passing arguments to it (port name, speed, databits)
-          05 CMD-LINE3   PIC X(12)                VALUE "COM3 9600 8 ".
-      *-> See the .ino sketch attached: this is what arduino checks
-          05 CMD-LINE4   PIC X(1)                 VALUE "1".
-      *-> just a filler, nothing
-          05 FILLER      PIC X(1)                 VALUE SPACE.
-      *-> number of seconds from SETTINGS-NSECS
-          05 CMD-LINE5   PIC 9(2)                 VALUE 15.
+      *   Arguments decoded by ARDUINO
+       77 CMD-ARGS       PIC X(5)       VALUE SPACES.
+       77 W-MESSAGE      PIC X(4)       VALUE SPACES.
       *
       *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*
       *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*
@@ -163,8 +155,13 @@
             MOVE FUNCTION CURRENT-DATE(1:14)
               TO WS-CURR-TIMESTAMP
             MOVE '      Waiting for next cycle' TO VIDEO-MESSAGE
-			MOVE 9                              TO W-COLOR
-            
+            MOVE 9                              TO W-COLOR
+
+            CALL 'C$SOCKET'         USING 3
+                                          64000
+                                          "127.0.0.1"
+                                    GIVING SOCKET-HANDLE
+
             PERFORM 05-CALCULATE-NEXT-TS
 
             DISPLAY MAIN-SCREEN
@@ -196,23 +193,32 @@
             .
       *----------------------------------------------------------------*
        15-OPEN-WATER.
-	        MOVE 6                                   TO W-COLOR
+            MOVE 6                                   TO W-COLOR
             MOVE "    WATER IS OPEN. PLEASE WAIT!"   TO VIDEO-MESSAGE
 
             DISPLAY INPUT-SETTINGS
             DISPLAY KEY-INPUT
 
       * -> Passing the number of seconds to the Arduino
-            MOVE SETTINGS-NSECS                      TO CMD-LINE5
+            STRING "1:" DELIMITED SIZE
+                   SETTINGS-NSECS DELIMITED SIZE
+              INTO W-MESSAGE
 
       * -> Calling the Serial Driver and sending the message
-            CALL "C$SYSTEM"  USING CMD-SEND-MESSAGE, 64
+            CALL 'C$SOCKET'   USING 5
+                              SOCKET-HANDLE
+                              W-MESSAGE
+                              4
+            MOVE SPACES TO KEY-PRESSED
+
+            CALL 'C$SOCKET'   USING 7
+                              SOCKET-HANDLE
 
       * -> Waiting for the same time to finish
             CALL "C$SLEEP"   USING SETTINGS-NSECS
 
       * -> Display reset
-	        MOVE 9                                   TO W-COLOR
+            MOVE 9                                   TO W-COLOR
             MOVE '      Waiting for next cycle'      TO VIDEO-MESSAGE
             .
       *----------------------------------------------------------------*

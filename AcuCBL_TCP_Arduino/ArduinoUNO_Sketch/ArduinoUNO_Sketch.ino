@@ -14,8 +14,8 @@
 
 #pragma region "Working-Storage"
 const int GAS_SENSOR = A5;   //Analog reading connected on this pin.
-int sensorValue = 0;         //This is the analog value read by the sensor.
 const int LED_PIN = 8;
+int sensorValue = 0;         //This is the analog value read by the sensor.
 String incomingMessage;
 
 LiquidCrystal LCD_DISPLAY(12, 11, 5, 4, 3, 2);
@@ -24,6 +24,7 @@ LiquidCrystal LCD_DISPLAY(12, 11, 5, 4, 3, 2);
 void setup()
 {  
    Serial.begin(9600);
+   pinMode(LED_PIN, OUTPUT);
    LCD_DISPLAY.begin(16, 2);
    LCD_DISPLAY.clear();
    LCD_DISPLAY.setCursor(0, 0);
@@ -36,28 +37,22 @@ void setup()
 void loop()
 {
    sensorValue = analogRead(GAS_SENSOR);  
+   DisplayValueOnLCD();
+   SendValueToSerial();
 
    if (Serial.available()) 
    {
       incomingMessage = Serial.readString();
-      
-      if (incomingMessage = "ON")
+
+      if (incomingMessage == "ON") 
       {
-         digitalWrite(LED_PIN, HIGH);
+          digitalWrite(LED_PIN, HIGH);
       }
-      else
-      {
-         digitalWrite(LED_PIN, LOW); 
-      }    
-      
-      delay (1000);
+      delay (2000);
+     digitalWrite(LED_PIN, LOW);
    }
 
-   DisplayValueOnLCD();
-   SendValueToSerial();
-
    delay(500);
-   digitalWrite(LED_PIN, LOW); 
 }
 
 ///
