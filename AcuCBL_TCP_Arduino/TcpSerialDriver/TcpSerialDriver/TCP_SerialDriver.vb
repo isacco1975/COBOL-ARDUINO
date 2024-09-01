@@ -2,58 +2,34 @@
 Imports System.IO.Ports
 Imports System.Net
 Imports System.Net.Sockets
+Imports System.Text
 Imports System.Threading
-'
-'*******************************************************
-'* TCP Serial Driver                                   *
-'*                                                     *
-'*                         2023 - Isaac Garcia Peveri  *
-'*                                                     *
-'* --------------------------------------------------  *
-'* A Multi R=Thread Serial Driver using TCP connections*
-'* --------------------------------------------------  *
-'*******************************************************
-'
+Imports Microsoft.VisualBasic
+
+''
+''*******************************************************
+''* TCP Serial Driver                                   *
+''*                                                     *
+''*                         2024 - Isaac Garcia Peveri  *
+''*                                                     *
+''* --------------------------------------------------  *
+''* SMTP SERVER                                         *
+''* --------------------------------------------------  *
+''*******************************************************
+''
 Module TCP_SerialDriver
 
 #Region "WORKING-STORAGE"
-    Private mainThread As Thread = Nothing
-    Private tcpThread As Thread = Nothing
-    Private listener As TcpListener
-    Private clientList As New List(Of TCP_Server)
-    Private tcpServer As TCP_Server
-    Private inSerialData As String = String.Empty
-    Private tcpPort As Integer = 64000
     Private WithEvents serialPort As SerialPort
     Private comportName As String = String.Empty
     Private comportSpeed As Integer = 9600
     Private comportParity As Parity
     Private comportStopBits As Integer = 1
     Private comportDataBits As Integer = 8
+    Private data As String = Nothing
+    Private tcpPort As Integer = 64000
 #End Region
 
-    ''' <summary>
-    ''' MAIN ROUTINE
-    ''' </summary>
-    Sub Main()
-        ReadSettings()
-
-        mainThread = New Thread(AddressOf Main_Thread)
-        mainThread.Start()
-
-        listener = New TcpListener(IPAddress.Any, tcpPort)
-        listener.Start()
-
-        tcpThread = New Thread(AddressOf TCP_Thread)
-        tcpThread.Start()
-
-        Console.WriteLine(" TCP SERIAL DRIVER STARTED: WAITING CONNECTIONS ")
-        Console.ReadLine()
-    End Sub
-
-    ''' <summary>
-    ''' Initialize Application Settings
-    ''' </summary>
     Private Sub ReadSettings()
         comportName = ConfigurationManager.AppSettings("ComportName")
         comportSpeed = CInt(ConfigurationManager.AppSettings("ComportSpeed"))
@@ -61,15 +37,6 @@ Module TCP_SerialDriver
         comportStopBits = CInt(ConfigurationManager.AppSettings("ComportStopBits"))
         comportDataBits = CInt(ConfigurationManager.AppSettings("ComportDataBits"))
         tcpPort = CInt(ConfigurationManager.AppSettings("TcpPort"))
-    End Sub
-
-    ''' <summary>
-    ''' Main Thread
-    ''' </summary>
-    ''' <param name="arg"></param>
-    Private Sub Main_Thread(arg As Object)
-        serialPort = New SerialPort(ComportName, ComportSpeed, ComportParity, ComportDataBits, ComportStopBits)
-        serialPort.Open()
     End Sub
 
     ''' <summary>
@@ -88,89 +55,82 @@ Module TCP_SerialDriver
     End Function
 
     ''' <summary>
-    ''' Thread Event DataReceived
+    ''' Main Logicv
     ''' </summary>
-    ''' <param name="sender"></param>
-    ''' <param name="e"></param>
-    Private Sub SerialPort_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles serialPort.DataReceived
-        inSerialData = serialPort.ReadExisting()
+    Sub Main()
+        ' Reading Serial Port Settings from Configuration, and creates the object
+        ReadSettings()
+        serialPort = New SerialPort(comportName, comportSpeed, comportParity, comportDataBits, comportStopBits)
 
-        If tcpServer IsNot Nothing Then
-            SendMessage(tcpServer.listClient, inSerialData)
-        End If
-    End Sub
+        ' Data buffer for incoming data.
+        Dim bytes() As Byte = New [Byte](1024) {}
 
-    ''' <summary>
-    ''' TCP thread handling tcp events, connections and so on
-    ''' </summary>
-    ''' <param name="arg"></param>
-    Private Sub TCP_Thread(arg As Object)
+        Dim ipHostInfo As IPHostEntry = Dns.Resolve(Dns.GetHostName())
+        Dim localEndPoint As New IPEndPoint(ipHostInfo.AddressList(0), tcpPort)
+
+        ' Create a TCP/IP socket.
+        Dim listener As New Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
+
+        ' Bind the socket to the local endpoint and listen for incoming connections.
         Try
-            listener.BeginAcceptTcpClient(New AsyncCallback(AddressOf AcceptClient), listener)
+            listener.Bind(localEndPoint)
+            listener.Listen(50)
+
+            ' Start listening for connections.
+            While True
+                Console.WriteLine(" ")
+                Console.WriteLine("Server: Waiting for a connection...")
+                Dim handler As Socket = listener.Accept()
+
+                Console.WriteLine("Incoming connection ...")
+                'Answering "Ready" (to talk with the client)
+                handler.Send(Encoding.ASCII.GetBytes("220 Test SMTP Service ready" & vbCrLf))
+
+                While True
+                    bytes = New Byte(1024) {}
+                    Dim bytesRec As Integer = handler.Receive(bytes)
+                    data = Encoding.ASCII.GetString(bytes, 0, bytesRec)
+                    Console.WriteLine("Incoming data from client : {0}", data)
+
+                    If Not data = String.Empty Then
+                        'Process Commands
+                        Dim command As String = data.Substring(0, 4).ToUpper
+                        Select Case command
+                            Case "HELO"
+                                handler.Send(Encoding.ASCII.GetBytes("250 OK" & vbCrLf))
+                            Case "MAIL"
+                                handler.Send(Encoding.ASCII.GetBytes("250 OK" & vbCrLf))
+                            Case "RCPT"
+                                handler.Send(Encoding.ASCII.GetBytes("250 OK" & vbCrLf))
+                            Case "DATA"
+                                ' Answering the client to send body data
+                                handler.Send(Encoding.ASCII.GetBytes("354 Start mail input; end with ." & vbCrLf))
+                            Case "QUIT"
+                                handler.Send(Encoding.ASCII.GetBytes("221 Service closing transmission channel" & vbCrLf))
+                                Exit While
+                            Case Else
+                                serialPort.Open()
+
+                                Console.WriteLine("Incoming TCP message: " & data.Replace(Convert.ToChar(0), ""))
+                                SendData(data.Replace(Convert.ToChar(0), "").Split(vbCrLf)(6).Replace(vbLf, String.Empty))
+                                handler.Send(Encoding.ASCII.GetBytes("250 OK" & vbCrLf))
+
+                                serialPort.Close()
+                        End Select
+                    End If
+                End While
+
+                'Close Connection
+                handler.Shutdown(SocketShutdown.Both)
+                handler.Close()
+            End While
+
         Catch ex As Exception
-            Throw ex
+            Console.WriteLine(ex.ToString())
         End Try
-    End Sub
 
-    ''' <summary>
-    ''' A new Client connects to the server
-    ''' </summary>
-    ''' <param name="ar"></param>
-    Public Sub AcceptClient(ByVal ar As IAsyncResult)
-        Try
-            If listener.Server.IsBound Then
-                tcpServer = New TCP_Server(listener.EndAcceptTcpClient(ar))
-
-                AddHandler(tcpServer.getMessage), AddressOf MessageReceived
-                AddHandler(tcpServer.clientLogout), AddressOf ClientExited
-                clientList.Add(tcpServer)
-                Console.WriteLine("... A client connected")
-
-                listener.BeginAcceptTcpClient(New AsyncCallback(AddressOf AcceptClient), listener)
-            End If
-
-        Catch ex As Exception
-            Throw ex
-        End Try
-    End Sub
-
-    ''' <summary>
-    ''' Event handler for incoming messages from Client
-    ''' </summary>
-    ''' <param name="rClient"></param>
-    ''' <param name="str"></param>
-    Private Sub MessageReceived(ByRef rClient As TcpClient, str As String)
-        Try
-            Console.WriteLine("Incoming TCP message: " & str.Replace(Convert.ToChar(0), ""))
-            SendData(str.Replace(Convert.ToChar(0), ""))
-        Catch ex As Exception
-            Throw ex
-        End Try
-    End Sub
-
-    ''' <summary>
-    ''' Sending data to the client
-    ''' </summary>
-    ''' <param name="rClient"></param>
-    ''' <param name="str"></param>
-    Private Sub SendMessage(ByRef rClient As TcpClient, str As String)
-        Try
-            Dim myBytes As Byte() = New Byte() {}
-            myBytes = System.Text.Encoding.ASCII.GetBytes(str)
-            rClient.GetStream().Write(myBytes, 0, myBytes.Length)
-            rClient.GetStream().Flush()
-        Catch ex As Exception
-            Throw ex
-        End Try
-    End Sub
-
-    ''' <summary>
-    ''' Disconnection
-    ''' </summary>
-    ''' <param name="client"></param>
-    Sub ClientExited(ByVal client As TCP_Server)
-        clientList.Remove(client)
-        Console.WriteLine("... A client disconnected")
+        Console.WriteLine(ControlChars.Cr + "Press ENTER to continue...")
+        Console.Read()
     End Sub
 
 End Module

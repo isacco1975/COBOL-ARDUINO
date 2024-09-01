@@ -13,10 +13,10 @@ C:\Users\isacc\Documents\Projects\COBOL-ARDUINO\AcuCBL_TCP_Arduino\TcpSerialDriv
 C:\Users\isacc\Documents\Projects\COBOL-ARDUINO\AcuCBL_TCP_Arduino\TcpSerialDriver\TcpSerialDriver\bin\Debug\TcpSerialDriver.exe
 C:\Users\isacc\Documents\Projects\COBOL-ARDUINO\AcuCBL_TCP_Arduino\TcpSerialDriver\TcpSerialDriver\bin\Debug\TcpSerialDriver.pdb
 C:\Users\isacc\Documents\Projects\COBOL-ARDUINO\AcuCBL_TCP_Arduino\TcpSerialDriver\TcpSerialDriver\bin\Debug\TcpSerialDriver.xml
-C:\Users\isacc\Documents\Projects\COBOL-ARDUINO\AcuCBL_TCP_Arduino\TcpSerialDriver\TcpSerialDriver\obj\Debug\TcpSerialDriver.vbproj.AssemblyReference.cache
 C:\Users\isacc\Documents\Projects\COBOL-ARDUINO\AcuCBL_TCP_Arduino\TcpSerialDriver\TcpSerialDriver\obj\Debug\TcpSerialDriver.Resources.resources
 C:\Users\isacc\Documents\Projects\COBOL-ARDUINO\AcuCBL_TCP_Arduino\TcpSerialDriver\TcpSerialDriver\obj\Debug\TcpSerialDriver.vbproj.GenerateResource.cache
 C:\Users\isacc\Documents\Projects\COBOL-ARDUINO\AcuCBL_TCP_Arduino\TcpSerialDriver\TcpSerialDriver\obj\Debug\TcpSerialDriver.vbproj.CoreCompileInputs.cache
 C:\Users\isacc\Documents\Projects\COBOL-ARDUINO\AcuCBL_TCP_Arduino\TcpSerialDriver\TcpSerialDriver\obj\Debug\TcpSerialDriver.exe
 C:\Users\isacc\Documents\Projects\COBOL-ARDUINO\AcuCBL_TCP_Arduino\TcpSerialDriver\TcpSerialDriver\obj\Debug\TcpSerialDriver.xml
 C:\Users\isacc\Documents\Projects\COBOL-ARDUINO\AcuCBL_TCP_Arduino\TcpSerialDriver\TcpSerialDriver\obj\Debug\TcpSerialDriver.pdb
+C:\Users\isacc\Documents\Projects\COBOL-ARDUINO\AcuCBL_TCP_Arduino\TcpSerialDriver\TcpSerialDriver\obj\Debug\TcpSerialDriver.vbproj.AssemblyReference.cache

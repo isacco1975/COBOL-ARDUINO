@@ -1,0 +1,5 @@
+C:\Users\isacc\Documents\Projects\COBOL-ARDUINO\AcuCBL_TCP_Arduino\TcpSerialDriver\LaunchTest\obj\Debug\net5.0\LaunchTest.vbproj.AssemblyReference.cache
+C:\Users\isacc\Documents\Projects\COBOL-ARDUINO\AcuCBL_TCP_Arduino\TcpSerialDriver\LaunchTest\obj\Debug\net5.0\LaunchTest.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\isacc\Documents\Projects\COBOL-ARDUINO\AcuCBL_TCP_Arduino\TcpSerialDriver\LaunchTest\obj\Debug\net5.0\LaunchTest.AssemblyInfoInputs.cache
+C:\Users\isacc\Documents\Projects\COBOL-ARDUINO\AcuCBL_TCP_Arduino\TcpSerialDriver\LaunchTest\obj\Debug\net5.0\LaunchTest.AssemblyInfo.vb
+C:\Users\isacc\Documents\Projects\COBOL-ARDUINO\AcuCBL_TCP_Arduino\TcpSerialDriver\LaunchTest\obj\Debug\net5.0\LaunchTest.vbproj.CoreCompileInputs.cache

@@ -22,22 +22,6 @@ TcpSerialDriver
   resource lookups using this strongly typed resource class.
 </summary>
 </member>
-<member name="M:TcpSerialDriver.TCP_SerialDriver.Main">
- <summary>
- MAIN ROUTINE
- </summary>
-</member>
-<member name="M:TcpSerialDriver.TCP_SerialDriver.ReadSettings">
- <summary>
- Initialize Application Settings
- </summary>
-</member>
-<member name="M:TcpSerialDriver.TCP_SerialDriver.Main_Thread(System.Object)">
- <summary>
- Main Thread
- </summary>
- <param name="arg"></param>
-</member>
 <member name="M:TcpSerialDriver.TCP_SerialDriver.SendData(System.String)">
  <summary>
  Sending data incoming via Client to serial port 
@@ -45,44 +29,10 @@ TcpSerialDriver
  <param name="msg"></param>
  <returns></returns>
 </member>
-<member name="M:TcpSerialDriver.TCP_SerialDriver.SerialPort_DataReceived(System.Object,System.IO.Ports.SerialDataReceivedEventArgs)">
+<member name="M:TcpSerialDriver.TCP_SerialDriver.Main">
  <summary>
- Thread Event DataReceived
+ Main Logicv
  </summary>
- <param name="sender"></param>
- <param name="e"></param>
-</member>
-<member name="M:TcpSerialDriver.TCP_SerialDriver.TCP_Thread(System.Object)">
- <summary>
- TCP thread handling tcp events, connections and so on
- </summary>
- <param name="arg"></param>
-</member>
-<member name="M:TcpSerialDriver.TCP_SerialDriver.AcceptClient(System.IAsyncResult)">
- <summary>
- A new Client connects to the server
- </summary>
- <param name="ar"></param>
-</member>
-<member name="M:TcpSerialDriver.TCP_SerialDriver.MessageReceived(System.Net.Sockets.TcpClient@,System.String)">
- <summary>
- Event handler for incoming messages from Client
- </summary>
- <param name="rClient"></param>
- <param name="str"></param>
-</member>
-<member name="M:TcpSerialDriver.TCP_SerialDriver.SendMessage(System.Net.Sockets.TcpClient@,System.String)">
- <summary>
- Sending data to the client
- </summary>
- <param name="rClient"></param>
- <param name="str"></param>
-</member>
-<member name="M:TcpSerialDriver.TCP_SerialDriver.ClientExited(TcpSerialDriver.TCP_Server)">
- <summary>
- Disconnection
- </summary>
- <param name="client"></param>
 </member>
 </members>
 </doc>
