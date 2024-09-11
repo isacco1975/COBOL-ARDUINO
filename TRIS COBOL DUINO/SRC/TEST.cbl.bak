@@ -1,0 +1,74 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.    "READSER",  is initial.
+       AUTHOR.        Isaac Garcia Peveri.
+       REMARKS.       Written in AcuCobol 7.0.0
+      ******************************************************************
+      * This example shows how to get a value from Arduino sensor      *
+      * by calling a Tcp Serial Driver written in VB.NET               *
+      * (as is a TCP driver, I am using C$SOCKET routine)              *
+      ******************************************************************
+      *
+       WORKING-STORAGE SECTION.
+       77 KEY-PRESSED PIC X.
+       77 SOCKET-HANDLE  USAGE HANDLE.
+      *   Arguments decoded by ARDUINO
+       77 CMD-ARGS       PIC X(1)       VALUE SPACES.
+       77 W-MESSAGE      PIC X(1)       VALUE 'R'.
+      *
+      /
+      *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*
+       PROCEDURE DIVISION.
+       MAIN.
+            DISPLAY 'COBOL CLIENT STARTED...'
+
+               CALL 'C$SOCKET'         USING 3
+                                          64000
+                                          "127.0.0.1"
+                                    GIVING SOCKET-HANDLE
+
+            PERFORM WORKING-CYCLE
+            PERFORM thread ACCEPT-KEYPRESS
+
+            STOP RUN
+            .
+      /
+      *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*
+       WORKING-CYCLE.
+            PERFORM UNTIL KEY-PRESSED = 'X' OR 'x'
+               CALL "C$SLEEP"       USING 0.1
+
+               CALL 'C$SOCKET'      USING 6
+                                    SOCKET-HANDLE
+                                    CMD-ARGS
+                                    1
+               DISPLAY 'INPUT RECEIVED: ' CMD-ARGS AT 0202
+
+               EVALUATE CMD-ARGS
+                   WHEN 'A' MOVE 1 TO W-MESSAGE
+                   WHEN 'B' MOVE 2 TO W-MESSAGE
+                   WHEN 'C' MOVE 3 TO W-MESSAGE
+                   WHEN 'D' MOVE 4 TO W-MESSAGE
+                   WHEN 'E' MOVE 5 TO W-MESSAGE
+                   WHEN 'F' MOVE 6 TO W-MESSAGE
+                   WHEN 'G' MOVE 7 TO W-MESSAGE
+                   WHEN 'H' MOVE 8 TO W-MESSAGE
+                   WHEN 'I' MOVE 9 TO W-MESSAGE
+               END-EVALUATE
+
+               CALL 'C$SOCKET'   USING 5
+                                 SOCKET-HANDLE
+                                 W-MESSAGE
+                                 1
+
+               MOVE SPACES TO KEY-PRESSED, CMD-ARGS
+               CALL "C$SLEEP"       USING 0.1
+            END-PERFORM
+            .
+      /
+      *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*
+       ACCEPT-KEYPRESS.
+            PERFORM UNTIL KEY-PRESSED = 'X' or 'x'
+               CALL "C$SLEEP" USING 0.5
+               ACCEPT KEY-PRESSED ON EXCEPTION CONTINUE END-ACCEPT
+            END-PERFORM
+            .
