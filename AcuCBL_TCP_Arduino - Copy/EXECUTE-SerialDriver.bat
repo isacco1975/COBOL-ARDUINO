@@ -1,0 +1,1 @@
+start .\TcpSerialDriver\TcpSerialDriver\bin\Debug\TcpSerialDriver.exe
