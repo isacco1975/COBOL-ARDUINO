@@ -19,6 +19,35 @@
        77 X-COL          PIC 9(4)       VALUE ZERO.
        77 Y-COL          PIC 9(4)       VALUE ZERO.
        77 W-COLOR        PIC 9(1)       VALUE 1.
+       77 FORM1-H        USAGE HANDLE OF WINDOW.
+       77 W-PIX          PIC X(8)       VALUE SPACES.
+       77 W-PIX-N        PIC 9(8)       VALUE ZERO.
+      *
+          COPY "ACUGUI.DEF".
+          COPY "ACUCOBOL.DEF".
+          COPY "CRTVARS.DEF".
+      *
+       SCREEN SECTION.
+       01 FORM1.
+          05 LABEL LINE 3 COL 4 COLOR 2
+             TITLE "Telesketch by IGP Tech Blog".
+
+          05 X-LABEL LABEL LINE 4 COL 5
+             TITLE "X: ".
+
+          05 X-LABEL-VALUE LABEL LINE 4 COL 8
+             TITLE " ".
+
+          05 Y-LABEL LABEL LINE 4 COL 15
+             TITLE "Y: ".
+
+          05 Y-LABEL-VALUE LABEL LINE 4 COL 19
+             TITLE " ".
+
+          05 WPIX-LABEL-VALUE LABEL LINE 5 COL 5
+             TITLE " ".
+      /
+      *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*
       /
       *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*
        PROCEDURE DIVISION.
@@ -37,17 +66,19 @@
       /
       *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*
        INIT-AREA.
-            DISPLAY WINDOW ERASE
-            DISPLAY ' '
-            DISPLAY '                            COBOL Telesketch 1.0'
-                    COLOR 3 HIGHLIGHT
-            DISPLAY '                             IGP TECH BLOG 2024'
-                    COLOR 3 HIGHLIGHT
+            DISPLAY STANDARD GRAPHICAL WINDOW
+                    COLOR 65793
+                    SYSTEM MENU
+                    TITLE "TELESKETCH"
+                    HANDLE FORM1-H
+          
+            DISPLAY FORM1 UPON FORM1-H
+      *     DISPLAY OMITTED ERASE TO END OF SCREEN
             .
       /
       *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*
        WORKING-CYCLE.
-            PERFORM UNTIL KEY-PRESSED = 'X' OR 'x'
+            PERFORM UNTIL 1 = 2
                CALL "C$SLEEP"       USING 0.01
 
                CALL 'C$SOCKET'      USING 6
@@ -61,27 +92,33 @@
                   UNSTRING CMD-ARGS DELIMITED BY ' '
                       INTO Y-VAL
 
-                  COMPUTE X-COL = X-VAL / 5
-                  COMPUTE Y-COL = Y-VAL / 10
+                  COMPUTE X-COL = X-VAL
+                  COMPUTE Y-COL = Y-VAL
 
-                  DISPLAY 'X: '  AT 0431 COLOR 4 HIGHLIGHT
-                  DISPLAY 'Y: '  AT 0440 COLOR 4 HIGHLIGHT
-                  DISPLAY X-VAL  AT 0434 COLOR 7 HIGHLIGHT
-                  DISPLAY Y-VAL  AT 0443 COLOR 7 HIGHLIGHT
-
-                  DISPLAY 'C: '  AT 0531 COLOR 4 HIGHLIGHT
-                  DISPLAY 'R: '  AT 0540 COLOR 4 HIGHLIGHT
-                  DISPLAY X-COL  AT 0534 COLOR 7 HIGHLIGHT
-                  DISPLAY Y-COL  AT 0543 COLOR 7 HIGHLIGHT
+                  MODIFY X-LABEL-VALUE TITLE X-COL
+                  MODIFY Y-LABEL-VALUE TITLE Y-COL
 
                   IF Y-COL < 6   MOVE 6 TO Y-COL   END-IF
                   IF Y-COL > 25  MOVE 25 TO Y-COL  END-IF
 
-                  DISPLAY '#'    AT LINE Y-COL, COLUMN X-COL
-                  COLOR W-COLOR  HIGHLIGHT
+                  MOVE CMD-ARGS(6:4) TO W-PIX
+                  MOVE CMD-ARGS(1:4) TO W-PIX(5:)
+                  MODIFY WPIX-LABEL-VALUE    TITLE W-PIX
+                  MOVE W-PIX TO W-PIX-N
+
+                  DISPLAY FRAME  UPON FORM1-H 
+                                 LINES = 0.5 SIZE = 0.5 TITLE = ""
+                                 COLOR W-COLOR  HIGHLIGHT
+                              AT    W-PIX-N PIXELS
                ELSE
                   IF CMD-ARGS(1:1) = 'C'
-                     PERFORM INIT-AREA
+      * IT IS NOT POSSIBLE TO CLEAR THE SCREEN, AS EVERY FRAME
+      * IS A GRAPHICAL CONTROL DISPLAYED OVER THE WINDOW.
+      *              DESTROY FORM1
+      *              DESTROY FORM1-H
+      *              DISPLAY OMITTED ERASE TO END OF SCREEN
+      *              CALL 'C$SLEEP' USING 0.5
+      *              PERFORM INIT-AREA
                   END-IF
 
                   IF CMD-ARGS(1:1) = 'R'
