@@ -2,11 +2,11 @@
        PROGRAM-ID.    "TS",  is initial.
        AUTHOR.        Isaac Garcia Peveri.
        REMARKS.       Written in AcuCobol 7.0.0
-      *LAST-EDIT.     2024, SEPTEMBER 12.
+      *LAST-EDIT.     2024, SEPTEMBER 20.
       /
       ******************************************************************
       * A telesketch (etch a sketch) written in Cobol                  *
-      * CHARACTER BASED VERSION                                        *
+      * GUI VERSION                                                    *
       ******************************************************************
       *
        WORKING-STORAGE SECTION.
@@ -20,8 +20,12 @@
        77 Y-COL          PIC 9(4)       VALUE ZERO.
        77 W-COLOR        PIC 9(1)       VALUE 1.
        77 FORM1-H        USAGE HANDLE OF WINDOW.
+       77 FORM2-H        USAGE HANDLE OF WINDOW.
        77 W-PIX          PIC X(8)       VALUE SPACES.
        77 W-PIX-N        PIC 9(8)       VALUE ZERO.
+       77 IDX-C          PIC 9(4)       VALUE ZERO.
+       77 IDX-R          PIC 9(4)       VALUE ZERO.
+       77 Z-PIX          PIC ZZZZZZZZ   BLANK WHEN ZERO.
       *
           COPY "ACUGUI.DEF".
           COPY "ACUCOBOL.DEF".
@@ -29,22 +33,22 @@
       *
        SCREEN SECTION.
        01 FORM1.
-          05 LABEL LINE 3 COL 4 COLOR 2
+          05 LABEL LINE 3 COL 4 COLOR 3 HIGHLIGHT
              TITLE "Telesketch by IGP Tech Blog".
 
-          05 X-LABEL LABEL LINE 4 COL 5
+          05 X-LABEL LABEL LINE 4 COL 5 COLOR 3 HIGHLIGHT
              TITLE "X: ".
 
-          05 X-LABEL-VALUE LABEL LINE 4 COL 8
+          05 X-LABEL-VALUE LABEL LINE 4 COL 8 COLOR 5 HIGHLIGHT
              TITLE " ".
 
-          05 Y-LABEL LABEL LINE 4 COL 15
+          05 Y-LABEL LABEL LINE 4 COL 15 COLOR 3 HIGHLIGHT
              TITLE "Y: ".
 
-          05 Y-LABEL-VALUE LABEL LINE 4 COL 19
+          05 Y-LABEL-VALUE LABEL LINE 4 COL 19 COLOR 5 HIGHLIGHT
              TITLE " ".
 
-          05 WPIX-LABEL-VALUE LABEL LINE 5 COL 5
+          05 WPIX-LABEL-VALUE LABEL LINE 5 COL 5 COLOR 6 HIGHLIGHT
              TITLE " ".
       /
       *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*
@@ -52,6 +56,12 @@
       *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*
        PROCEDURE DIVISION.
        MAIN.
+            DISPLAY STANDARD GRAPHICAL WINDOW
+                    COLOR 0
+                    SYSTEM MENU
+                    TITLE "TELESKETCH"
+                    HANDLE FORM2-H
+
             PERFORM INIT-AREA
 
             CALL 'C$SOCKET'         USING 3
@@ -66,14 +76,10 @@
       /
       *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*
        INIT-AREA.
-            DISPLAY STANDARD GRAPHICAL WINDOW
-                    COLOR 65793
-                    SYSTEM MENU
-                    TITLE "TELESKETCH"
-                    HANDLE FORM1-H
-          
-            DISPLAY FORM1 UPON FORM1-H
-      *     DISPLAY OMITTED ERASE TO END OF SCREEN
+            DISPLAY FLOATING GRAPHICAL WINDOW MODAL
+                    COLOR 1 HANDLE FORM1-H
+
+            DISPLAY FORM1
             .
       /
       *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*
@@ -106,19 +112,12 @@
                   MODIFY WPIX-LABEL-VALUE    TITLE W-PIX
                   MOVE W-PIX TO W-PIX-N
 
-                  DISPLAY FRAME  UPON FORM1-H 
-                                 LINES = 0.5 SIZE = 0.5 TITLE = ""
+                  DISPLAY FRAME  LINES = 0.5 SIZE = 0.5 TITLE = ""
                                  COLOR W-COLOR  HIGHLIGHT
-                              AT    W-PIX-N PIXELS
+                           AT    W-PIX-N PIXELS
                ELSE
                   IF CMD-ARGS(1:1) = 'C'
-      * IT IS NOT POSSIBLE TO CLEAR THE SCREEN, AS EVERY FRAME
-      * IS A GRAPHICAL CONTROL DISPLAYED OVER THE WINDOW.
-      *              DESTROY FORM1
-      *              DESTROY FORM1-H
-      *              DISPLAY OMITTED ERASE TO END OF SCREEN
-      *              CALL 'C$SLEEP' USING 0.5
-      *              PERFORM INIT-AREA
+                     PERFORM ERASE-ENTIRE-SCREEN
                   END-IF
 
                   IF CMD-ARGS(1:1) = 'R'
@@ -138,6 +137,12 @@
                   END-IF
                END-IF
             END-PERFORM
+            .
+      /
+      *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*
+       ERASE-ENTIRE-SCREEN.
+            DESTROY FORM1
+            PERFORM INIT-AREA
             .
       /
        END-PROGRAM. "TS".

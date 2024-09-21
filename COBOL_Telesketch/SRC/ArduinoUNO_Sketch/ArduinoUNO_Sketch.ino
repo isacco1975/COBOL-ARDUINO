@@ -116,7 +116,7 @@ void loop()
    }
 
    //Serial.println("");
-   delay(15);
+   delay(16);
 }
 
 void padZeros(char* charStr) //this doesn't handle negative numbers
